@@ -33,8 +33,9 @@ func CmdStatus(c *cli.Context) error {
 	RailsSqlAssetPath := "data/sql/github/rails-routes.sql"
 	NodeSqlAssetPath := "data/sql/github/nodejs-routes.sql"
 	TomcatSqlAssetPath := "data/sql/github/tomcat-routes.sql"
-
-	verboseOpt := c.GlobalBool("verbose")
+	ExpressJSSqlAssetPath := "data/sql/github/expressjs-routes.sql"
+	
+    verboseOpt := c.GlobalBool("verbose")
 	silentOpt := c.GlobalBool("silent")
 	testOpt := c.GlobalBool("test")
 	project := c.GlobalString("project")
@@ -70,6 +71,7 @@ func CmdStatus(c *cli.Context) error {
 		RailsSqlAssetPath = "data/sql/github/rails-routes-test.sql"
 		NodeSqlAssetPath = "data/sql/github/nodejs-routes-test.sql"
 		TomcatSqlAssetPath = "data/sql/github/tomcat-routes-test.sql"
+	    ExpressJSSqlAssetPath = "data/sql/github/expressjs-routes-test.sql"
 		log.WithFields(fields).Info("Running in test mode.")
 	}
 
@@ -104,8 +106,7 @@ func CmdStatus(c *cli.Context) error {
 			NodeTemplate := fasttemplate.New(NodeSQLString, "{{", "}}")
 			NodeCompiledSql := NodeTemplate.ExecuteString(map[string]interface{}{
 				"limit": limitArg,
-			})
-			if verboseOpt {
+			}) if verboseOpt {
 				log.WithFields(fields).Infof("Compiled SQL Template: %s", NodeCompiledSql)
 			}
 			sqlTemplateStrings["nodejs"] = NodeCompiledSql
@@ -125,7 +126,22 @@ func CmdStatus(c *cli.Context) error {
 			}
 			sqlTemplateStrings["tomcat"] = TomcatCompiledSql
 			log.WithFields(fields).Info("Generated SQL template for Tomcat routes.")
-		}
+		case "expressjs":
+			ExpressJSSqlAsset, err := assets.Asset(ExpressJSSqlAssetPath)
+			if err != nil {
+				log.Debug("SQL for ExpressJS not found.")
+			}
+			ExpressJSSQLString := string(ExpressJSSqlAsset[:])
+			ExpressJSTemplate := fasttemplate.New(ExpressJSSQLString, "{{", "}}")
+			ExpressJSCompiledSql := ExpressJSTemplate.ExecuteString(map[string]interface{}{
+				"limit": limitArg,
+			})
+			if verboseOpt {
+				log.WithFields(fields).Infof("Compiled SQL Template: %s", ExpressJSCompiledSql)
+			}
+			sqlTemplateStrings["expressjs"] = ExpressJSCompiledSql
+			log.WithFields(fields).Info("Generated SQL template for ExpressJS routes.")
+        }
 	}
 
 	// Initialise BigQuery Golang Client

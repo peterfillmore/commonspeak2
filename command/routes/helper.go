@@ -115,7 +115,9 @@ func handleResults(w io.Writer, iter *bigquery.RowIterator, outputFile string, f
 			continue
 		case "tomcat":
 			continue
-		}
+		case "expressjs":
+			continue
+        }
 	}
 
 	for _, parameter := range stringParameters {
@@ -129,7 +131,9 @@ func handleResults(w io.Writer, iter *bigquery.RowIterator, outputFile string, f
 			continue
 		case "tomcat":
 			continue
-		}
+		case "expressjs":
+			continue
+        }
 	}
 
 	// fmt.Printf("%v",numericalFilter)

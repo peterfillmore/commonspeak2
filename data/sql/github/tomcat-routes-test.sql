@@ -1,12 +1,16 @@
 CREATE TEMPORARY FUNCTION parseRoutes(routesCode STRING)
 RETURNS ARRAY<STRING> LANGUAGE js AS """
-
-  var regex = /("|')[a-zA-Z_0-9\\/\\:!@$%^&*()+=]*('|")/mgi;
-  if (routesCode) {
-    var result = routesCode.match(regex);
-  } else {
-    var result = [];
-  }
+  result = [];
+  var regexFullMatch = /\\.get\\(('|")\\/([a-zA-Z_0-9\\/\\:!@$%^&*()+=]*)('|")/mgi;
+  var regexPartial = /('|")(.*)('|")/i;
+  if(regexFullMatch.test(routesCode)) {
+       var fullmatch = routesCode.match(regexFullMatch);
+       for (var i in fullmatch) {
+            if(regexPartial.test(fullmatch[i])) {
+                 result.push(fullmatch[i].match(regexPartial)[2]);
+            };
+       };
+  };
   return result;
   """;
 
@@ -24,10 +28,10 @@ FROM (
     FROM
       `bigquery-public-data.github_repos.sample_files`
     WHERE
-      path = "config/routes.rb" ) f
+      path LIKE '%.js') f
   ON
     f.id = c.id ) routes,
-  UNNEST(route) AS route
+    UNNEST(route) AS route
 WHERE
   route IS NOT NULL
 GROUP BY

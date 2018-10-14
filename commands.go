@@ -105,8 +105,8 @@ var Commands = []cli.Command{
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "frameworks, f",
-				Value: "rails,nodejs,tomcat",
-				Usage: "Frameworks to generate wordlists for, currently limited to [rails,nodejs,tomcat]",
+				Value: "rails,nodejs,tomcat,expressjs",
+				Usage: "Frameworks to generate wordlists for, currently limited to [rails,nodejs,tomcat,expressjs]",
 			},
 			cli.StringFlag{
 				Name:  "limit, l",

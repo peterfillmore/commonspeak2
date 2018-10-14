@@ -24,7 +24,7 @@ FROM (
     FROM
       `bigquery-public-data.github_repos.files`
     WHERE
-      path = "config/routes.rb" ) f
+      path = "conf/web.xml" ) f
   ON
     f.id = c.id ) routes,
   UNNEST(route) AS route
